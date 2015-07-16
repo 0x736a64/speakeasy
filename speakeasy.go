@@ -1,20 +1,18 @@
 package main
 
 import(
-	"log"
-	"os"
+	"github.com/kardianos/osext"
 	"net/http"
-	"path/filepath"
+    "strings"
+	"log"
 )
 
 func main() {
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		log.Println(err)
-	}
-	port := ":3000"
-	index := http.FileServer(http.Dir(dir))
-	http.Handle("/", index)
-	log.Println("Serving index from ", dir)
+	dir, _ := osext.Executable()
+    dir = strings.TrimSuffix(dir, "speakeasy")
+	root := http.FileServer(http.Dir(dir))
+    port := ":3000"
+	http.Handle("/", root)
+	log.Println("listening on localhost" + port)
 	http.ListenAndServe(port, nil)
 }
