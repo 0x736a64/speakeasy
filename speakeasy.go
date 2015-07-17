@@ -8,11 +8,10 @@ import(
 )
 
 func main() {
-	dir, _ := osext.Executable()
-    dir = strings.TrimSuffix(dir, "speakeasy")
+	dir, _ := osext.ExecutableFolder()
 	root := http.FileServer(http.Dir(dir))
     port := ":3000"
 	http.Handle("/", root)
-	log.Println("listening on localhost" + port)
 	http.ListenAndServe(port, nil)
+	log.Println("listening on localhost" + port)
 }
