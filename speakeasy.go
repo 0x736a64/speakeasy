@@ -3,7 +3,6 @@ package main
 import(
 	"github.com/kardianos/osext"
 	"net/http"
-    "strings"
 	"log"
 )
 
