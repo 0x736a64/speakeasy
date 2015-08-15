@@ -2,8 +2,9 @@ package main
 
 import(
 	"github.com/kardianos/osext"
+	"github.com/skratchdot/open-golang/open"
 	"net/http"
-	"log"
+	"fmt"
 )
 
 func main() {
@@ -11,6 +12,8 @@ func main() {
 	root := http.FileServer(http.Dir(dir))
     port := ":3000"
 	http.Handle("/", root)
-	log.Println("listening on localhost" + port)
+	fmt.Println("Listening on localhost" + port)
+	fmt.Println("press 'ctrl-c' to terminate process")
+	open.Start("http://localhost" + port)
 	http.ListenAndServe(port, nil)
 }
