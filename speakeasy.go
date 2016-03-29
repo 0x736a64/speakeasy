@@ -1,38 +1,53 @@
 package main
 
-import(
-	"os"
-	"fmt"
-	"bufio"
-	"strings"
-	"net/http"
-	"github.com/kardianos/osext"
+import (
+    "fmt"
+    "flag"
+    "log"
+    "strings"
+    "net/http"
+    "github.com/kardianos/osext"
 	"github.com/skratchdot/open-golang/open"
 )
 
 func main() {
-	port := setPort()
-	url := setURL(port)
-	dir, _ := osext.ExecutableFolder()
-	root := http.FileServer(http.Dir(dir))
-	http.Handle("/", root)
-	serve(url, port)
+    dir := getDir()
+    port := getPort()
+    host := getHost(port)
+    run(dir, port, host)
 }
 
-func serve(url, port string) {
-	fmt.Println("-> Listening on ", url)
-	fmt.Println("-> Press ctrl-c to kill process")
-	open.RunWith(url, "Google chrome")
-	http.ListenAndServe(port, nil)
+func getDir() string {
+    dir, err := osext.ExecutableFolder()
+    if err != nil {
+        log.Fatal(err)
+    }
+    return dir
 }
 
-func setPort() string{
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Enter a port: ")
-	input, _ := reader.ReadString('\n')
-	return strings.TrimSpace(fmt.Sprintf(":%s", input))
+func getPort() string {
+    portInput := flag.String("port", "3000", "an open port to run the HTTP server")
+    flag.Parse()
+    return fmt.Sprintf(":%s", *portInput)
 }
 
-func setURL(port string) string{
-	return strings.TrimSpace(fmt.Sprintf("http://localhost%s", port))
+func getHost (port string) string {
+   return strings.TrimSpace(fmt.Sprintf("http://localhost%s", port))   
+}
+
+func setOutput (host string) {
+    fmt.Println("-> Listening on ", host)
+    fmt.Println("-> Press ctrl-c to kill process")
+}
+
+func setRoot (dir string) {
+    root := http.FileServer(http.Dir(dir))
+    http.Handle("/", root)
+}
+
+func run(dir, port, host string) {
+    setRoot(dir)
+    setOutput(host)
+    open.Start(host)
+    http.ListenAndServe(port, nil)
 }
